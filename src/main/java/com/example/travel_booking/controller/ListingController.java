@@ -25,18 +25,17 @@ public class ListingController {
 
     private final ObjectMapper mapper = new ObjectMapper();
 
-    @PostMapping(value = "/create", consumes = "multipart/form-data")
+    @PostMapping(value = "/create", consumes = {"multipart/form-data"})
     public Listing createListing(
             @RequestPart("data") String data,
             @RequestPart("images") MultipartFile[] images
     ) throws IOException {
 
-        // Convert JSON string to Listing object
+        ObjectMapper mapper = new ObjectMapper();
         Listing listing = mapper.readValue(data, Listing.class);
 
         List<String> imageUrls = new ArrayList<>();
 
-        // Upload files to S3
         for (MultipartFile image : images) {
             String url = s3Service.uploadFile(image);
             imageUrls.add(url);
@@ -46,6 +45,7 @@ public class ListingController {
 
         return listingRepo.save(listing);
     }
+
 
 
     // SEARCH LISTINGS
